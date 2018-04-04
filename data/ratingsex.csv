@@ -1,0 +1,36 @@
+UserId:ItemId,Prediction,Timestamp
+Lisa Rose:Lady In the Water,2.5,25364
+Lisa Rose:Snakes on a Plane,3.5,76789
+Lisa Rose:Just My Luck,3,7689
+Lisa Rose:Superman Returns,3.5,45678
+Lisa Rose:You Me and Dupree,2.5,3657
+Lisa Rose:The Night Listener,3,35467
+Gene Seymour:Lady In the Water,3,345678
+Gene Seymour:Snakes on a Plane,3.5,75678
+Gene Seymour:Just My Luck,1.5,23547
+Gene Seymour:Superman Returns,5,4768
+Gene Seymour:The Night Listener,3,424346
+Gene Seymour:You Me and Dupree,3.5,578
+Michael Phillips:Lady In the Water,2.5,243
+Michael Phillips:Snakes on a Plane,3,34465
+Michael Phillips:Superman Returns,3.5,5678
+Michael Phillips:The Night Listener,4,990
+Claudia Puig:Snakes on a Plane,3.5,9898
+Claudia Puig:Just My Luck,3,7687
+Claudia Puig:The Night Listener,4.5,45678
+Claudia Puig:Superman Returns,4,34456
+Claudia Puig:You Me and Dupree,2.5,65342
+Mick LaSalle:Lady In the Water,3,45645
+Mick LaSalle:Snakes on a Plane,4,7687
+Mick LaSalle:Just My Luck,2,235
+Mick LaSalle:Superman Returns,3,35423
+Mick LaSalle:The Night Listener,3,34534
+Mick LaSalle:You Me and Dupree,2,7889
+Jack Matthews:Lady In the Water,3,3557
+Jack Matthews:Snakes on a Plane,4,75686
+Jack Matthews:The Night Listener,3,32423
+Jack Matthews:Superman Returns,5,4354
+Jack Matthews:You Me and Dupree,3.5,5676
+Toby:Snakes on a Plane,4.5,453543
+Toby:You Me and Dupree,1,234234
+Toby:Superman Returns,4,42342

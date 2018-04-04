@@ -6,13 +6,15 @@
 #include <fstream>
 #include <cmath>
 
-double UserItemMatrix::pearsonCorrelation(std::string userId1, std::string userId2)
+double UserItemMatrix::pearsonCorrelation(
+    std::map<std::string, std::map<std::string, ItemPrediction> >& customBasedMatrix,
+    std::string userId1, std::string userId2)
 {
     std::map<std::string, int> ratingsInCommon;
-    std::for_each(dRatings[userId1].cbegin(), dRatings[userId1].cend(),
+    std::for_each(customBasedMatrix[userId1].cbegin(), customBasedMatrix[userId1].cend(),
         [&] (std::pair<std::string,ItemPrediction> item){
-            auto iti = dRatings[userId2].find(item.first);
-            if (iti != dRatings[userId2].end()) {
+            auto iti = customBasedMatrix[userId2].find(item.first);
+            if (iti != customBasedMatrix[userId2].end()) {
                 ratingsInCommon[item.first] = 1;
             }
         });
@@ -23,17 +25,17 @@ double UserItemMatrix::pearsonCorrelation(std::string userId1, std::string userI
     sum1 = sum2 = sum1Sq = sum2Sq = pSum = 0;
 
     std::for_each(ratingsInCommon.cbegin(), ratingsInCommon.cend(), [&](std::pair<std::string, int> itm) {
-        sum1 += dRatings[userId1][itm.first].prediction;
-        sum2 += dRatings[userId2][itm.first].prediction;
+        sum1 += customBasedMatrix[userId1][itm.first].prediction;
+        sum2 += customBasedMatrix[userId2][itm.first].prediction;
 
-        sum1Sq += pow(dRatings[userId1][itm.first].prediction, 2);
-        sum2Sq += pow(dRatings[userId2][itm.first].prediction, 2);
+        sum1Sq += pow(customBasedMatrix[userId1][itm.first].prediction, 2);
+        sum2Sq += pow(customBasedMatrix[userId2][itm.first].prediction, 2);
 
-        pSum += dRatings[userId1][itm.first].prediction * dRatings[userId2][itm.first].prediction;
+        pSum += customBasedMatrix[userId1][itm.first].prediction * customBasedMatrix[userId2][itm.first].prediction;
     });
 
     auto num = pSum - (sum1 * sum2 / n);
-    auto den = sqrt(sum1Sq - pow(sum1,2)/n) * (sum2Sq - pow(sum2,2)/n);
+    auto den = sqrt((sum1Sq - pow(sum1,2)/n) * (sum2Sq - pow(sum2,2)/n));
     if (den == 0) return double(0);
     return num/den;
 }
@@ -75,6 +77,10 @@ void UserItemMatrix::predict(std::string userId, std::string itemId)
 
 void UserItemMatrix::addLineToMap(std::string line)
 {
+    if (line == std::string(""))
+    {
+        return;
+    }
     auto lineStream = std::stringstream(line);
     std::string userItemIds, prediction, timestamp;
     std::getline(lineStream, userItemIds, ',');
@@ -100,31 +106,69 @@ void UserItemMatrix::readRatingsAsMap(std::string pathToFile)
     }
 }
 
-std::vector<double> UserItemMatrix::topMatches(
+template<typename A, typename B>
+std::pair<B,A> flipPair (const std::pair<A,B> &p) {
+    return std::pair<B,A>(p.second, p.first);
+}
+
+template<typename A, typename B>
+std::map<B,A> flipMap (const std::map<A,B> &src) {
+    std::map<B,A> flippedMap;
+    std::transform(src.begin(), src.end(), std::inserter(flippedMap, flippedMap.begin()), flipPair<A,B>);
+    return flippedMap;
+}
+
+std::vector<std::pair<std::string, double> > UserItemMatrix::topMatches(
+    std::map<std::string, std::map<std::string, ItemPrediction> >& customBasedMatrix,
     std::string person,
-    std::function<double(std::string, std::string)> similarity)
+    bool simPearson)
 {
-    std::vector<double> scores;
-    std::for_each(dRatings.begin(), dRatings.end(),
+    std::map<std::string, double> scores;
+    std::for_each(customBasedMatrix.begin(), customBasedMatrix.end(),
     [&](std::pair<std::string, std::map<std::string, ItemPrediction> > rating){
         if (rating.first != person) {
-            scores.push_back(similarity(person, rating.first));
+            scores[rating.first] = pearsonCorrelation(customBasedMatrix, person, rating.first);
         }
     });
 
-    std::sort(scores.begin(), scores.end(), 
-    [] (double score1, double score2) { return score1 > score2; });
-    return scores;
+    std::vector<std::pair<std::string, double> > pairs;
+    for (auto itr = scores.begin(); itr != scores.end(); ++itr)
+        pairs.push_back(*itr);
+
+    std::sort(pairs.begin(), pairs.end(),
+    [] (std::pair<std::string, double> &a, std::pair<std::string, double> &b)
+    {
+        return a.second >= b.second;
+    });
+
+    return pairs;
 }
 
 std::vector<double> UserItemMatrix::getRecommendations(
     std::string person,
     std::function<double(std::string, std::string)> similarity)
 {
-
 }
 
-void UserItemMatrix::calculateSimilarItems()
+std::map<std::string, std::map<std::string, double> > UserItemMatrix::calculateSimilarItems()
 {
-    
+    std::map<std::string, std::map<std::string, double> > scores;
+    for(auto itm = itemBasedMatrix.cbegin(); itm != itemBasedMatrix.cend(); itm++)
+    {
+        auto scoresItem = topMatches(itemBasedMatrix, itm->first);
+        std::for_each(scoresItem.cbegin(), scoresItem.cend(),
+        [&](std::pair<std::string, double> const &pair) {
+            scores[itm->first].insert(pair);
+        });
+    }
+    return scores;
+}
+
+void UserItemMatrix::createItemBasedMatrixFromUserBasedMatrix()
+{
+    for(auto itm = dRatings.cbegin(); itm != dRatings.cend(); itm++){
+        std::for_each(itm->second.cbegin(), itm->second.cend(), [&](std::pair<std::string, ItemPrediction> pair){
+            itemBasedMatrix[pair.first][itm->first] = pair.second;
+        });
+    }
 }
