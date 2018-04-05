@@ -27,7 +27,9 @@ struct UserItemMatrix {
         std::map<std::string, std::map<std::string, ItemPrediction> >&,
         std::string,
         bool=true);
-    std::vector<double> getRecommendations(std::string, std::function<double(std::string, std::string)>);
+    std::vector<std::pair<std::string, double> > getRecommendations(
+        std::map<std::string, std::map<std::string, ItemPrediction> >& userItemMatrix,
+        std::string);
     std::map<std::string, std::map<std::string, double> > calculateSimilarItems();
     void createItemBasedMatrixFromUserBasedMatrix();
 

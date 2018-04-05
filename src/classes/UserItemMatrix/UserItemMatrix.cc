@@ -144,23 +144,55 @@ std::vector<std::pair<std::string, double> > UserItemMatrix::topMatches(
     return pairs;
 }
 
-std::vector<double> UserItemMatrix::getRecommendations(
-    std::string person,
-    std::function<double(std::string, std::string)> similarity)
+std::vector<std::pair<std::string, double> > UserItemMatrix::getRecommendations(
+    std::map<std::string, std::map<std::string, ItemPrediction> >& userItemMatrix,
+    std::string userOrItem)
 {
+    std::map<std::string, double> totals, simSums;
+    for (auto otherUserOrItem : userItemMatrix) {
+        if (otherUserOrItem.first == userOrItem) continue;
+        auto sim = pearsonCorrelation(userItemMatrix, userOrItem, otherUserOrItem.first);
+        if (sim <= 0) continue;
+        for (auto && itemRating : userItemMatrix[otherUserOrItem.first]) {
+            if (otherUserOrItem.second.count(itemRating.first) == 0) continue;
+            if (otherUserOrItem.second[itemRating.first].prediction != 0) continue;
+            totals[itemRating.first] += userItemMatrix[otherUserOrItem.first][itemRating.first].prediction * sim;
+            simSums[itemRating.first] += sim;
+        }
+    }
+
+    std::vector<std::pair<std::string, double> > rankings;
+    for (auto &&item : totals) {
+        rankings.push_back(*new std::pair<std::string, double>(item.first, item.second/simSums[item.first]));
+    }
+
+    std::sort(rankings.begin(), rankings.end(), 
+    [&] (std::pair<std::string, double>& a, std::pair<std::string, double>& b){
+        return a.second < b.second;
+    });
+    return rankings;
 }
 
 std::map<std::string, std::map<std::string, double> > UserItemMatrix::calculateSimilarItems()
 {
     std::map<std::string, std::map<std::string, double> > scores;
+    std::map<std::string, std::vector<std::pair<std::string, double> > > scoresRanked;
     for(auto itm = itemBasedMatrix.cbegin(); itm != itemBasedMatrix.cend(); itm++)
     {
         auto scoresItem = topMatches(itemBasedMatrix, itm->first);
         std::for_each(scoresItem.cbegin(), scoresItem.cend(),
         [&](std::pair<std::string, double> const &pair) {
             scores[itm->first].insert(pair);
+            scoresRanked[itm->first].push_back(pair);
         });
     }
+    std::for_each(scoresRanked.cbegin(), scoresRanked.cend(),
+    [&] (std::pair<std::string, std::vector<std::pair<std::string, double> > > similars) {
+        std::sort(similars.second.begin(), similars.second.end(), 
+        [&](std::pair<std::string, double> a, std::pair<std::string, double> b) {
+            return a.second > b.second;
+        });
+    });
     return scores;
 }
 

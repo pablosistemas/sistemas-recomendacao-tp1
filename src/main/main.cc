@@ -12,5 +12,6 @@ int main(int argc, char **argv) {
     auto res = matrix.pearsonCorrelation(matrix.dRatings, "Lisa Rose", "Gene Seymour");
     auto top = matrix.topMatches(matrix.dRatings ,"Toby", true);
     auto similar = matrix.calculateSimilarItems();
+    auto rec = matrix.getRecommendations(matrix.dRatings, "Toby");
     // matrix.pearsonCorrelation();
 }
