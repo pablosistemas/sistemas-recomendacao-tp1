@@ -155,7 +155,7 @@ std::vector<std::pair<std::string, double> > UserItemMatrix::getRecommendations(
         if (sim <= 0) continue;
         for (auto && itemRating : userItemMatrix[otherUserOrItem.first]) {
             if (otherUserOrItem.second.count(itemRating.first) == 0) continue;
-            if (otherUserOrItem.second[itemRating.first].prediction != 0) continue;
+            if (otherUserOrItem.second[itemRating.first].prediction == 0) continue;
             totals[itemRating.first] += userItemMatrix[otherUserOrItem.first][itemRating.first].prediction * sim;
             simSums[itemRating.first] += sim;
         }
@@ -168,7 +168,7 @@ std::vector<std::pair<std::string, double> > UserItemMatrix::getRecommendations(
 
     std::sort(rankings.begin(), rankings.end(), 
     [&] (std::pair<std::string, double>& a, std::pair<std::string, double>& b){
-        return a.second < b.second;
+        return a.second > b.second;
     });
     return rankings;
 }
