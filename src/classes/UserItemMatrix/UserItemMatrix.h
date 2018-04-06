@@ -13,24 +13,26 @@ struct UserItemMatrix {
     std::vector<std::vector<Rating> > userItemMatrix;
     RatingList ratings;
 
-    double pearsonCorrelation(
-        std::map<std::string, std::map<std::string, ItemPrediction> >&,
-        std::string, std::string);
     void setMatrixFromRatingList();
-
-    void predict(std::string, std::string);
-    void predictionFromFile(std::string);
 
     void readRatingsAsMap(std::string);
 
-    std::vector<std::pair<std::string, double> > topMatches(
-        std::map<std::string, std::map<std::string, ItemPrediction> >&,
-        std::string,
-        bool=true);
     std::vector<std::pair<std::string, double> > getRecommendations(
         std::map<std::string, std::map<std::string, ItemPrediction> >& userItemMatrix,
-        std::string);
-    std::map<std::string, std::map<std::string, double> > calculateSimilarItems();
+        std::string,
+        std::function<double(
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            const std::string&,
+            const std::string&)>);
+
+    std::map<std::string, std::map<std::string, double> > calculateSimilarItems(
+        std::map<std::string, std::map<std::string, ItemPrediction> >&,
+        std::function<double(
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            const std::string&,
+            const std::string&)>
+    );
+
     void createItemBasedMatrixFromUserBasedMatrix();
 
     private:

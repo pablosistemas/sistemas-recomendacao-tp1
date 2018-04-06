@@ -10,6 +10,10 @@ struct ItemPrediction {
 
     ItemPrediction();
     ItemPrediction(double, time_t);
+
+    double operator-(const ItemPrediction& b) {
+            return prediction - b.prediction;
+   }
 };
 
 #endif
