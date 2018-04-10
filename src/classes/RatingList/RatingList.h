@@ -10,8 +10,8 @@
 #include <map>
 
 struct RatingList {
-    std::vector<Rating> ratings;
     std::map<std::string, unsigned long> userIndex, itemIndex;
+    std::vector<Rating> ratings;
     unsigned long countIdx;
     
     public:

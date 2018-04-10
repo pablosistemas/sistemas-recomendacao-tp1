@@ -14,8 +14,9 @@ namespace Recommender {
             std::function<double(
                 std::map<std::string, std::map<std::string, ItemPrediction> >&,
                 const std::string&,
-                const std::string&)>
-            );
+                const std::string&)>,
+            int=-1, int=-1, bool=false
+        );
     };
 }
 

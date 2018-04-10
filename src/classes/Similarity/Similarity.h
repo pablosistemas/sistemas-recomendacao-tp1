@@ -6,14 +6,38 @@
 #include "../ItemPrediction/ItemPrediction.h"
 
 namespace Similarity {
-    struct Pearson {
+
+    struct BaseSimilarity {
+        virtual double operator()(
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            const std::string&,
+            const std::string&) = 0;
+    };
+
+    struct Pearson : public BaseSimilarity { 
         double operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             const std::string&,
             const std::string&);
     };
 
-    struct Distance {
+    struct Correlation : public BaseSimilarity { 
+        double operator()(
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            const std::string&,
+            const std::string&);
+    };
+
+
+    struct Distance : public BaseSimilarity { 
+        double operator()(
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            const std::string&,
+            const std::string&);
+    };
+
+    struct Cosine : public BaseSimilarity { 
         double operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             const std::string&,

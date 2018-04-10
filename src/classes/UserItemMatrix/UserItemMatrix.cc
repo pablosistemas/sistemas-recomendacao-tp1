@@ -2,6 +2,7 @@
 #include "../TopMatches/TopMatches.h"
 #include "../BaseList/BaseList.h"
 #include "./UserItemMatrix.h"
+#include "../FileManager/FileManager.h"
 
 #include <algorithm>
 #include <fstream>
@@ -28,35 +29,9 @@ void UserItemMatrix::setMatrixFromRatingList()
     }
 }
 
-void UserItemMatrix::addLineToMap(std::string line)
-{
-    if (line == std::string(""))
-    {
-        return;
-    }
-    auto lineStream = std::stringstream(line);
-    std::string userItemIds, prediction, timestamp;
-    std::getline(lineStream, userItemIds, ',');
-    std::getline(lineStream, prediction, ',');
-    std::getline(lineStream, timestamp, ',');
-    std::tuple<std::string, std::string> userItem = BaseList::getUserIdFromString(userItemIds);
-    dRatings[std::get<0>(userItem)].insert( std::pair<std::string,ItemPrediction>(std::get<1>(userItem),
-        *(new ItemPrediction(
-            (double)atof(prediction.c_str()),
-            (time_t) strtol (timestamp.c_str(), NULL, 10)
-        ))
-    ));
-}
-
 void UserItemMatrix::readRatingsAsMap(std::string pathToFile)
 {
-    auto file = std::ifstream(pathToFile.c_str());
-    std::string title, line;
-    std::getline(file, title, '\n');
-    while(file.good()){
-        std::getline(file, line, '\n');
-        addLineToMap(line);
-    }
+    FileManager::read<std::map<std::string, std::map<std::string, ItemPrediction> >>(pathToFile, dRatings);
 }
 
 template<typename A, typename B>
@@ -70,8 +45,6 @@ std::map<B,A> flipMap (const std::map<A,B> &src) {
     std::transform(src.begin(), src.end(), std::inserter(flippedMap, flippedMap.begin()), flipPair<A,B>);
     return flippedMap;
 }
-
-
 
 std::vector<std::pair<std::string, double> > UserItemMatrix::getRecommendations(
     std::map<std::string, std::map<std::string, ItemPrediction> >& userItemMatrix,
@@ -111,26 +84,27 @@ std::map<std::string, std::map<std::string, double> > UserItemMatrix::calculateS
     std::function<double(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             const std::string&,
-            const std::string&)> similarity)
+            const std::string&)> similarity,
+    int K, int P, bool randomize)
 {
     std::map<std::string, std::map<std::string, double> > scores;
     std::map<std::string, std::vector<std::pair<std::string, double> > > scoresRanked;
     for(auto itm = userOrItemBasedMatrix.cbegin(); itm != userOrItemBasedMatrix.cend(); itm++)
     {
-        auto scoresItem = TopMatches()(userOrItemBasedMatrix, itm->first, similarity);
+        auto scoresItem = TopMatches()(userOrItemBasedMatrix, itm->first, similarity, K, P, randomize);
         std::for_each(scoresItem.cbegin(), scoresItem.cend(),
         [&](std::pair<std::string, double> const &pair) {
             scores[itm->first].insert(pair);
             scoresRanked[itm->first].push_back(pair);
         });
     }
-    std::for_each(scoresRanked.cbegin(), scoresRanked.cend(),
-    [&] (std::pair<std::string, std::vector<std::pair<std::string, double> > > similars) {
-        std::sort(similars.second.begin(), similars.second.end(), 
-        [&](std::pair<std::string, double> a, std::pair<std::string, double> b) {
-            return a.second > b.second;
-        });
-    });
+    // std::for_each(scoresRanked.cbegin(), scoresRanked.cend(),
+    // [&] (std::pair<std::string, std::vector<std::pair<std::string, double> > > similars) {
+    //     std::sort(similars.second.begin(), similars.second.end(), 
+    //     [&](std::pair<std::string, double> a, std::pair<std::string, double> b) {
+    //         return a.second > b.second;
+    //     });
+    // });
     return scores;
 }
 

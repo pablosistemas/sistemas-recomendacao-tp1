@@ -36,6 +36,8 @@ namespace Similarity{
         auto num = pSum - (sum1 * sum2 / n);
         auto den = sqrt((sum1Sq - pow(sum1,2)/n) * (sum2Sq - pow(sum2,2)/n));
         if (den == 0) return double(0);
+        std::cout << pSum << " " << sum1 << " " << sum2 << " " << den << " " << n <<"\n";
+        std::cout << "Pearson (" << userId1 << ", " << userId2 << ") = " << num/den << "\n\n";
         return num/den;
     }
 
@@ -45,7 +47,7 @@ namespace Similarity{
         const std::string& userOrItem2)
     {
         std::map<std::string, double> sim;
-        for(auto &&item : userOrItemMatrix[userOrItem1]){
+        for (auto &&item : userOrItemMatrix[userOrItem1]){
             if (userOrItemMatrix[userOrItem2].count(item.first) == 1) {
                 sim.insert(*new std::pair<std::string, double>(item.first, 1));
             }
@@ -59,4 +61,29 @@ namespace Similarity{
         auto sum1 = 1.0/(1.0 + sqrt(sum));
         return sum1;
     }
+
+    double Cosine::operator()(
+        std::map<std::string, std::map<std::string, ItemPrediction> >&userOrItemMatrix,
+        const std::string& userOrItem1,
+        const std::string& userOrItem2)
+    {
+        std::map<std::string, double> sim;
+        for (auto &&item : userOrItemMatrix[userOrItem1]){
+            if (userOrItemMatrix[userOrItem2].count(item.first) == 1) {
+                sim.insert(*new std::pair<std::string, double>(item.first, 1));
+            }
+        }
+
+        if (sim.size() == 0) return 0;
+        double num, den1, den2;
+        num = den1 = den2 = 0.0;
+        std::for_each(sim.cbegin(), sim.cend(), [&](std::pair<std::string, double>const& item){
+            num += userOrItemMatrix[userOrItem1][item.first] * userOrItemMatrix[userOrItem2][item.first];
+            den1 += pow(userOrItemMatrix[userOrItem1][item.first], 2);
+            den2 += pow(userOrItemMatrix[userOrItem2][item.first], 2);
+        });
+        auto result = num / (sqrt(den1) * sqrt(den2));
+        return result;
+    }
 }
+

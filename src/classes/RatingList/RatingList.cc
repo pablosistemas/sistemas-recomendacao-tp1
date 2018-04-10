@@ -16,8 +16,11 @@ void RatingList::readRatings(std::string pathToFile)
     std::getline(file, title, '\n');
     while(file.good()){
         std::getline(file, line, '\n');
-        addLineToList(line);
+        if (line != "") {
+            addLineToList(line);
+        }
     }
+    file.close();
 }
 
 void RatingList::addLineToList(std::string line)

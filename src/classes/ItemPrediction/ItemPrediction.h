@@ -13,7 +13,14 @@ struct ItemPrediction {
 
     double operator-(const ItemPrediction& b) {
             return prediction - b.prediction;
-   }
+    }
+
+    double operator*(const ItemPrediction& b) {
+            return prediction * b.prediction;
+    }
+
+    explicit operator double () { return prediction; }
+    operator double () const { return prediction; }
 };
 
 #endif
