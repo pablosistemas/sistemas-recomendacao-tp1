@@ -24,8 +24,8 @@ namespace Recommender {
                     auto itemSimilarity = similarity(customBasedMatrix, person, rating.first);
                     if (itemSimilarity != 0.0) {
                         scores[rating.first] = itemSimilarity;
-                        n++;
                     }
+                    n++; // in cold-start it is possible to exist just few or no similarities
                 }
                 return true;
             });
@@ -37,7 +37,10 @@ namespace Recommender {
             for (; n < nPairs;) {
                 auto it = std::next(customBasedMatrix.begin(), dist(rng));
                 if (it->first != person && scores.count(it->first) == 0) {
-                    scores[it->first] = similarity(customBasedMatrix, person, it->first);
+                    auto itemSimilarity = similarity(customBasedMatrix, person, it->first);
+                    if (itemSimilarity != 0.0) {
+                        scores[it->first] = itemSimilarity;
+                    }
                     n++;
                 }
             }

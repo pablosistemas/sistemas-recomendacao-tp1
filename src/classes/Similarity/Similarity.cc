@@ -79,8 +79,8 @@ namespace Similarity{
         num = den1 = den2 = 0.0;
         std::for_each(sim.cbegin(), sim.cend(), [&](std::pair<std::string, double>const& item){
             num += userOrItemMatrix[userOrItem1][item.first] * userOrItemMatrix[userOrItem2][item.first];
-            den1 += pow(userOrItemMatrix[userOrItem1][item.first], 2);
-            den2 += pow(userOrItemMatrix[userOrItem2][item.first], 2);
+            den1 += pow(userOrItemMatrix[userOrItem1][item.first].prediction, 2);
+            den2 += pow(userOrItemMatrix[userOrItem2][item.first].prediction, 2);
         });
         auto result = num / (sqrt(den1) * sqrt(den2));
         return result;

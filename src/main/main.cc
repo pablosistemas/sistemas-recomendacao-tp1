@@ -9,11 +9,13 @@
 #include "../classes/Predictors/Predictors.cc"
 #include "../classes/TopMatches/TopMatches.cc"
 #include "../classes/Algorithms/Algorithms.cc"
+#include "../classes/Helpers/Helpers.cc"
 
 using namespace Recommender;
 using namespace Algorithms;
 using namespace Predictors;
 using namespace Similarity;
+using namespace Helpers;
 
 int main(int argc, char **argv) {
 
@@ -27,9 +29,7 @@ int main(int argc, char **argv) {
     RatingList targets;
     targets.readRatings(argv[2]);
 
-    auto top = TopMatches()(matrix.dRatings,"Toby", Pearson());
-    auto topI = TopMatches()(matrix.itemBasedMatrix,"Superman Returns", Pearson());
-
+    // TimestampManip::differenceInYears(&matrix.itemBasedMatrix["i0444778"]["u0026502"].tstamp);
     auto K = 40;
     auto P = 100;
 
@@ -79,7 +79,8 @@ int main(int argc, char **argv) {
     auto res1 = Distance()(matrix.dRatings, nome1, nome2);
 
     auto top = TopMatches()(matrix.dRatings,"Toby", Pearson());
-
+    auto top = TopMatches()(matrix.dRatings,"Toby", Pearson());
+    auto topI = TopMatches()(matrix.itemBasedMatrix,"Superman Returns", Pearson());
     auto topI = TopMatches()(matrix.itemBasedMatrix,"Superman Returns", Pearson());
 
     auto similar = matrix.calculateSimilarItems(matrix.itemBasedMatrix, Pearson());
