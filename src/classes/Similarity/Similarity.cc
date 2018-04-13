@@ -3,7 +3,6 @@
 #include <cmath>
 
 namespace Similarity{
-
     double Pearson::operator()(
         std::map<std::string, std::map<std::string, ItemPrediction> >& customBasedMatrix,
         const std::string& userId1,
@@ -86,4 +85,3 @@ namespace Similarity{
         return result;
     }
 }
-

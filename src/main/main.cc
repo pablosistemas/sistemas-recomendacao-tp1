@@ -9,7 +9,7 @@
 #include "../classes/Predictors/Predictors.cc"
 #include "../classes/TopMatches/TopMatches.cc"
 #include "../classes/Algorithms/Algorithms.cc"
-#include "../classes/Helpers/Helpers.cc"
+#include "../classes/Helpers/Helpers.h"
 
 using namespace Recommender;
 using namespace Algorithms;
@@ -30,8 +30,10 @@ int main(int argc, char **argv) {
     targets.readRatings(argv[2]);
 
     // TimestampManip::differenceInYears(&matrix.itemBasedMatrix["i0444778"]["u0026502"].tstamp);
-    auto K = 40;
-    auto P = 100;
+    double avgRating = 0.0;
+    int ratedItems = 0;
+    auto K = 50;
+    auto P = 300;
 
     auto start = std::chrono::high_resolution_clock::now();
     auto similar = matrix.calculateSimilarItems(matrix.itemBasedMatrix, Cosine(), P, K, true);
@@ -39,7 +41,7 @@ int main(int argc, char **argv) {
     auto stop = std::chrono::high_resolution_clock::now();
     auto timeSpent = std::chrono::duration_cast <std::chrono::seconds> ( stop - start ).count();
     std::cout << "Time spent: " << timeSpent << std::endl;
-    ItemToItem()(matrix.itemBasedMatrix, matrix.dRatings, similar, targets, K, P);
+    ItemToItem()(matrix.itemBasedMatrix, matrix.dRatings, similar, targets, &avgRating, &ratedItems, K, P);
     // UserToUser()(matrix.dRatings, similar, targets, K, P);
 
     // auto similar = matrix.calculateSimilarItems(matrix.dRatings, Pearson());

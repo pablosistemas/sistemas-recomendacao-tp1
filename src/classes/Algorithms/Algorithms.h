@@ -12,13 +12,24 @@ namespace Algorithms {
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             std::map<std::string, std::map<std::string, double> >&,
             RatingList &,
-            int=-1, int=-1
+            double*, int*, int=-1, int=-1
         );
     };
 
     struct UserToUser {
         void operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            std::map<std::string, std::map<std::string, double> >&,
+            RatingList &,
+            int=-1, int=-1
+        );
+    };
+
+    struct Hybrid {
+        void operator()(
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            std::map<std::string, std::map<std::string, double> >&,
             std::map<std::string, std::map<std::string, double> >&,
             RatingList &,
             int=-1, int=-1

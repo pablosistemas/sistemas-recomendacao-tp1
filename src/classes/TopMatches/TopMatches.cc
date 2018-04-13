@@ -16,7 +16,7 @@ namespace Recommender {
     {
         int n = 0;
         std::map<std::string, double> scores;
-        if (!randomize || pPairs > customBasedMatrix.size() - 1 || pPairs == -1) {
+        if (!randomize || pPairs > (int)(customBasedMatrix.size() - 1) || pPairs == -1) {
             std::all_of(customBasedMatrix.begin(), customBasedMatrix.end(),
             [&](std::pair<std::string, std::map<std::string, ItemPrediction> > rating){
                 if (n >= pPairs && pPairs != -1) return false;
@@ -33,7 +33,7 @@ namespace Recommender {
             std::mt19937 rng;
             rng.seed(std::random_device()());
             std::uniform_int_distribution<std::mt19937::result_type> dist(0, customBasedMatrix.size() - 1);
-            int nPairs = pPairs > 0 && pPairs < customBasedMatrix.size() ? pPairs : customBasedMatrix.size();
+            int nPairs = pPairs > 0 && pPairs < (int)customBasedMatrix.size() ? pPairs : customBasedMatrix.size();
             for (; n < nPairs;) {
                 auto it = std::next(customBasedMatrix.begin(), dist(rng));
                 if (it->first != person && scores.count(it->first) == 0) {
@@ -56,7 +56,7 @@ namespace Recommender {
             return a.second > b.second;
         });
 
-        if (kNeighbors == -1 || kNeighbors > pairs.size())
+        if (kNeighbors == -1 || kNeighbors > (int)pairs.size())
             return pairs;
         return Helpers::slice<std::pair<std::string, double> >(pairs, 0, kNeighbors);
     }

@@ -26,7 +26,7 @@ namespace Predictors {
     {
         double num, den; num = den = 0.0;
         for (auto it = topSimilarUsers.cbegin(); it != topSimilarUsers.cend(); it++) {
-            if (userBased[user].count(item) == -1) continue;
+            if (userBased[user].count(item) == 0) continue;
             if (userBased[user][item] == 0) continue;
             num += userBased[user][item].prediction * it->second;
             den += it->second;
