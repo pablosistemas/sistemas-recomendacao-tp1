@@ -11,16 +11,16 @@ namespace Algorithms {
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             std::map<std::string, std::map<std::string, double> >&,
-            RatingList &,
-            double*, int*, int=-1, int=-1
+            RatingList &, int=-1, int=-1
         );
     };
 
     struct UserToUser {
         void operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
-            std::map<std::string, std::map<std::string, double> >&,
-            RatingList &
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            RatingList &,
+            int=-1, int=-1, bool=false
         );
     };
 

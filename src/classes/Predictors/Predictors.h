@@ -1,9 +1,9 @@
 #ifndef PREDICTORS_H
 #define PREDICTORS_H
 
-#include <map>
-
 #include "../ItemPrediction/ItemPrediction.h"
+#include <vector>
+#include <map>
 
 namespace Predictors {
 

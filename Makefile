@@ -7,6 +7,7 @@ BIN_FOLDER = bin
 
 SOURCES = \
 		ItemPrediction.o\
+		Predictors.o\
 		Helpers.o\
 		TopMatches.o\
 		Rating.o\
@@ -29,6 +30,9 @@ all : $(PROGRAM)
 ItemPrediction.o : $(CLASSES_FOLDER)/ItemPrediction/ItemPrediction.cc
 	$(CC) $(LDFLAGS) $(CFLAGS) $(CLASSES_FOLDER)/ItemPrediction/ItemPrediction.cc
 
+Predictors.o : $(CLASSES_FOLDER)/Predictors/Predictors.cc
+	$(CC) $(LDFLAGS) $(CFLAGS) $(CLASSES_FOLDER)/Predictors/Predictors.cc
+
 TopMatches.o : $(CLASSES_FOLDER)/TopMatches/TopMatches.cc
 	$(CC) $(LDFLAGS) $(CFLAGS) $(CLASSES_FOLDER)/TopMatches/TopMatches.cc
 
@@ -50,7 +54,7 @@ Helpers.o : ItemPrediction.o $(CLASSES_FOLDER)/Helpers/Helpers.cc
 Rating.o : $(CLASSES_FOLDER)/Rating/Rating.cc
 	$(CC) $(LDFLAGS) $(CFLAGS) $(CLASSES_FOLDER)/Rating/Rating.cc
 
-recommender: Helpers.o ItemPrediction.o TopMatches.o Similarity.o Algorithms.o UserItemMatrix.o RatingList.o Rating.o $(MAIN) 
+recommender: Helpers.o ItemPrediction.o Predictors.o TopMatches.o Similarity.o Algorithms.o UserItemMatrix.o RatingList.o Rating.o $(MAIN) 
 	$(CC) $(CFLAGS) $(SOURCES) $(MAIN) -o $(BIN_FOLDER)/$(PROGRAM)
 	rm ./*.o
 
@@ -63,6 +67,7 @@ run:
 make:
 	$(CC) $(CFLAGS)\
 		src/classes/ItemPrediction/ItemPrediction.cc\
+		src/classes/Predictors/Predictors.cc\
 		src/classes/Rating/Rating.cc\
 		src/classes/Helpers/Helpers.cc\
 		src/classes/RatingList/RatingList.cc\

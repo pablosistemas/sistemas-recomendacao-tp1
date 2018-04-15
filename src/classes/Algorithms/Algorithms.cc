@@ -18,8 +18,7 @@ namespace Algorithms {
         std::map<std::string, std::map<std::string, ItemPrediction> >& itemBasedMatrix,
         std::map<std::string, std::map<std::string, ItemPrediction> >& userBasedMatrix,
         std::map<std::string, std::map<std::string, double> >& itemSimilarity,
-        RatingList &targets,
-        double* sumRating, int* numItems, int K, int P
+        RatingList &targets, int K, int P
     ) {
         /**
         * Why Weibull?
@@ -40,7 +39,8 @@ namespace Algorithms {
         *   qqplot(samples, rweibull(1000, shape, scale))
         */
         std::default_random_engine gen;
-        std::weibull_distribution<double> dist(4.591694, 7.940204);
+        // std::weibull_distribution<double> dist(4.591694, 7.940204);
+        std::weibull_distribution<double> dist(4.700021, 7.960964);
 
         std::cout << "UserId:ItemId,Prediction" << std::endl;
         for (auto it = targets.ratings.cbegin(); it != targets.ratings.cend(); it++){
@@ -53,38 +53,41 @@ namespace Algorithms {
 
             if (den != 0.0) {
                 std::cout << it->userId << ":" << it->itemId << "," << num/den << std::endl;
-                (*sumRating) += num/den;
             } else {
-                auto rating = std::max(0, std::min((int)std::floor(dist(gen)), 10));
-                (*sumRating) += rating;
+                double rating = 0.0;
+                if (userBasedMatrix[it->userId].size() > 0) {
+                    rating = getUserAverageScore(userBasedMatrix, it->userId);
+                    // if ((std::ceil(rating) - rating) > (rating - std::floor(rating)))
+                    //     rating = std::floor(rating);
+                    // else
+                    //     rating = std::ceil(rating);
+                } else {
+                    rating = std::max(0, std::min((int)std::floor(dist(gen)), 10));
+                }
                 std::cout << it->userId << ":" << it->itemId << "," << rating << std::endl;
             }
-            (*numItems)++;
         }
     }
 
     void UserToUser::operator()(
         std::map<std::string, std::map<std::string, ItemPrediction> >&userBasedMatrix,
-        std::map<std::string, std::map<std::string, double> >&similarUsers,
-        RatingList &targets)
+        std::map<std::string, std::map<std::string, ItemPrediction> >&itemBasedMatrix,
+        RatingList &targets, int K, int P, bool randomize)
     {
-        for (auto it = targets.ratings.cbegin(); it != targets.ratings.cend(); it++){
-            auto num = 0.0;
-            auto den = 0.0;
-            std::for_each(
-                similarUsers[it->userId].cbegin(),
-                similarUsers[it->userId].cend(),
-                [&](std::pair<std::string, double>const&  user){
-                if (userBasedMatrix[user.first].count(it->itemId) > 0)  {
-                    auto avgUserB = getUserAverageScore(userBasedMatrix, user.first);
-                    // auto similarity = similarity(userBasedMatrix, itemBasedMatrix, person, rating.first);
-                    num += similarUsers[it->userId][user.first] * (userBasedMatrix[user.first][it->itemId].prediction - avgUserB);
-                    den += std::abs(similarUsers[it->userId][user.first]);
-                }
-            });
+        std::default_random_engine gen;
+        std::weibull_distribution<double> dist(4.591694, 7.940204);
 
-            auto avgUserA = getUserAverageScore(userBasedMatrix, it->userId);
-            std::cout << it->userId << ":" << it->itemId << "," << avgUserA + num/den << std::endl;
+        for (auto it = targets.ratings.cbegin(); it != targets.ratings.cend(); it++){
+            auto topSimilarUsers = TopMatches()(
+                userBasedMatrix,
+                itemBasedMatrix,
+                it->userId,
+                Pearson(), K, P, randomize);
+            auto prediction = NeighborPrediction()(userBasedMatrix, topSimilarUsers, it->userId, it->itemId);
+            if (prediction == 0.0) {
+                prediction = std::max(0, std::min((int)std::floor(dist(gen)), 10));
+            }
+            std::cout << it->userId << ":" << it->itemId << "," << prediction << std::endl;
         }
     }
 

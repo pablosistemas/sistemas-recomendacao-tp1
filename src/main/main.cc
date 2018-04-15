@@ -25,8 +25,6 @@ int main(int argc, char **argv) {
     auto K = 40;
     auto P = 60;
 
-    double avgRating; avgRating = 0.0;
-    int ratedItems = 0;
     auto similarItems = matrix.calculateSimilarItems(
         matrix.itemBasedMatrix,
         matrix.userBasedMatrix,
@@ -37,9 +35,17 @@ int main(int argc, char **argv) {
         matrix.itemBasedMatrix,
         matrix.userBasedMatrix,
         similarItems,
-        targets,
-        &avgRating,
-        &ratedItems, K, P);
+        targets, K, P);
+
+    // auto K = 20;
+    // auto P = 30;
+
+    // UserToUser()(
+    //     matrix.userBasedMatrix, 
+    //     matrix.itemBasedMatrix,
+    //     targets,
+    //     K, P, true
+    // );
 
     return 0;
 }
