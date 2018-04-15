@@ -1,14 +1,16 @@
-#include "TopMatches.h"
 #include "../Helpers/Helpers.h"
-
+#include "./TopMatches.h"
 #include <algorithm>
+#include <vector>
 #include <random>
 
 namespace Recommender {
     std::vector<std::pair<std::string, double> > TopMatches::operator()(
-        std::map<std::string, std::map<std::string, ItemPrediction> >& customBasedMatrix,
+        std::map<std::string, std::map<std::string, ItemPrediction> >& userBasedMatrix,
+        std::map<std::string, std::map<std::string, ItemPrediction> >& itemBasedMatrix,
         std::string person,
         std::function<double(
+                std::map<std::string, std::map<std::string, ItemPrediction> >&,
                 std::map<std::string, std::map<std::string, ItemPrediction> >&,
                 const std::string&,
                 const std::string&)> similarity,
@@ -16,12 +18,12 @@ namespace Recommender {
     {
         int n = 0;
         std::map<std::string, double> scores;
-        if (!randomize || pPairs > (int)(customBasedMatrix.size() - 1) || pPairs == -1) {
-            std::all_of(customBasedMatrix.begin(), customBasedMatrix.end(),
+        if (!randomize || pPairs > (int)(userBasedMatrix.size() - 1) || pPairs == -1) {
+            std::all_of(userBasedMatrix.begin(), userBasedMatrix.end(),
             [&](std::pair<std::string, std::map<std::string, ItemPrediction> > rating){
                 if (n >= pPairs && pPairs != -1) return false;
                 if (rating.first != person) {
-                    auto itemSimilarity = similarity(customBasedMatrix, person, rating.first);
+                    auto itemSimilarity = similarity(userBasedMatrix, itemBasedMatrix, person, rating.first);
                     if (itemSimilarity != 0.0) {
                         scores[rating.first] = itemSimilarity;
                     }
@@ -32,12 +34,13 @@ namespace Recommender {
         } else {
             std::mt19937 rng;
             rng.seed(std::random_device()());
-            std::uniform_int_distribution<std::mt19937::result_type> dist(0, customBasedMatrix.size() - 1);
-            int nPairs = pPairs > 0 && pPairs < (int)customBasedMatrix.size() ? pPairs : customBasedMatrix.size();
-            for (; n < nPairs;) {
-                auto it = std::next(customBasedMatrix.begin(), dist(rng));
+            std::uniform_int_distribution<std::mt19937::result_type> dist(0, userBasedMatrix.size() - 1);
+            int nPairs = pPairs > 0 && pPairs < (int)userBasedMatrix.size() ? pPairs : userBasedMatrix.size();
+            while (n < nPairs) {
+                int offset = dist(rng);
+                auto it = std::next(userBasedMatrix.begin(), offset);
                 if (it->first != person && scores.count(it->first) == 0) {
-                    auto itemSimilarity = similarity(customBasedMatrix, person, it->first);
+                    auto itemSimilarity = similarity(userBasedMatrix, itemBasedMatrix, person, it->first);
                     if (itemSimilarity != 0.0) {
                         scores[it->first] = itemSimilarity;
                     }

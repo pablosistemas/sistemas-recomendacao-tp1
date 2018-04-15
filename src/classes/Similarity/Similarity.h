@@ -10,6 +10,7 @@ namespace Similarity {
     struct BaseSimilarity {
         virtual double operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
             const std::string&,
             const std::string&) = 0;
     };
@@ -17,11 +18,12 @@ namespace Similarity {
     struct Pearson : public BaseSimilarity { 
         double operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
             const std::string&,
             const std::string&);
     };
 
-    struct Correlation : public BaseSimilarity { 
+    struct CorrelationBased : public BaseSimilarity { 
         double operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
@@ -33,12 +35,22 @@ namespace Similarity {
     struct Distance : public BaseSimilarity { 
         double operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
             const std::string&,
             const std::string&);
     };
 
     struct Cosine : public BaseSimilarity { 
         double operator()(
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
+            const std::string&,
+            const std::string&);
+    };
+
+    struct AdjustedCosine : public BaseSimilarity { 
+        double operator()(
+            std::map<std::string, std::map<std::string, ItemPrediction> >&,
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             const std::string&,
             const std::string&);

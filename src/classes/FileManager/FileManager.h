@@ -5,6 +5,7 @@
 #include <sstream>
 #include <tuple>
 
+#include "../ItemPrediction/ItemPrediction.h"
 #include "../BaseList/BaseList.h"
 
 struct FileManager {

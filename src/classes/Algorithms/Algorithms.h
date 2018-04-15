@@ -1,8 +1,8 @@
 #ifndef ALGORITHMS_H
 #define ALGORITHMS_H
 
-#include "../RatingList/RatingList.h"
 #include "../ItemPrediction/ItemPrediction.h"
+#include "../RatingList/RatingList.h"
 #include <map>
 
 namespace Algorithms {
@@ -20,8 +20,7 @@ namespace Algorithms {
         void operator()(
             std::map<std::string, std::map<std::string, ItemPrediction> >&,
             std::map<std::string, std::map<std::string, double> >&,
-            RatingList &,
-            int=-1, int=-1
+            RatingList &
         );
     };
 
@@ -32,7 +31,7 @@ namespace Algorithms {
             std::map<std::string, std::map<std::string, double> >&,
             std::map<std::string, std::map<std::string, double> >&,
             RatingList &,
-            int=-1, int=-1
+            double*, int*, int=-1, int=-1
         );
     };
 }
