@@ -57,6 +57,7 @@ Rating.o : $(CLASSES_FOLDER)/Rating/Rating.cc
 recommender: Helpers.o ItemPrediction.o Predictors.o TopMatches.o Similarity.o Algorithms.o UserItemMatrix.o RatingList.o Rating.o $(MAIN) 
 	$(CC) $(CFLAGS) $(SOURCES) $(MAIN) -o $(BIN_FOLDER)/$(PROGRAM)
 	rm ./*.o
+	cp bin/$(PROGRAM) .
 
 clean:
 	rm *.o bin/$(PROGRAM)
@@ -80,3 +81,4 @@ make:
 		src/classes/Similarity/Similarity.cc\
 		src/main/main.cc\
 		-o bin/$(PROGRAM)
+		cp bin/$(PROGRAM) .
