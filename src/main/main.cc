@@ -37,15 +37,5 @@ int main(int argc, char **argv) {
         similarItems,
         targets, K, P);
 
-    // auto K = 20;
-    // auto P = 30;
-
-    // UserToUser()(
-    //     matrix.userBasedMatrix, 
-    //     matrix.itemBasedMatrix,
-    //     targets,
-    //     K, P, true
-    // );
-
     return 0;
 }

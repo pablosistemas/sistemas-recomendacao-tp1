@@ -57,10 +57,6 @@ namespace Algorithms {
                 double rating = 0.0;
                 if (userBasedMatrix[it->userId].size() > 0) {
                     rating = getUserAverageScore(userBasedMatrix, it->userId);
-                    // if ((std::ceil(rating) - rating) > (rating - std::floor(rating)))
-                    //     rating = std::floor(rating);
-                    // else
-                    //     rating = std::ceil(rating);
                 } else {
                     rating = std::max(0, std::min((int)std::floor(dist(gen)), 10));
                 }
@@ -91,6 +87,7 @@ namespace Algorithms {
         }
     }
 
+    // FIXME: test
     void Hybrid::operator()(
         std::map<std::string, std::map<std::string, ItemPrediction> >&userBasedMatrix,
         std::map<std::string, std::map<std::string, ItemPrediction> >&itemBasedMatrix,

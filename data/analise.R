@@ -48,6 +48,8 @@ fit.w <- fitdistr(samples, "weibull")
 shape <- fit.w$estimate[1]
 scale <- fit.w$estimate[2]
 qqplot(samples, rweibull(1000, shape, scale))
+cat("Shape: ", shape)
+cat("Scale: ", scale)
 
 fit.p <- fitdistr(samples, "poisson")
 shape <- fit.p$estimate[1]

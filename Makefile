@@ -21,9 +21,9 @@ CFLAGS	= -Wall -std=c++14 -g -Wdelete-non-virtual-dtor -Wno-unknown-pragmas
 PROGRAM	= recommender
 OBJECTS	= (SOURCES: .cc = .o)
 
-INPUT	= data/ratings.csv
-TARGET	= data/targets.csv
-OUTPUT	= data/submission.csv
+INPUT	= ratings.csv
+TARGET	= targets.csv
+OUTPUT	= submission.csv
 
 all : $(PROGRAM)
 
@@ -61,8 +61,11 @@ recommender: Helpers.o ItemPrediction.o Predictors.o TopMatches.o Similarity.o A
 clean:
 	rm *.o bin/$(PROGRAM)
 
+run2:
+	bin/$(PROGRAM) data/$(INPUT) data/$(TARGET) > data/$(OUTPUT)
+
 run:
-	bin/$(PROGRAM) $(INPUT) $(TARGET) > $(OUTPUT)
+	./$(PROGRAM) $(INPUT) $(TARGET) > $(OUTPUT)
 
 make:
 	$(CC) $(CFLAGS)\
